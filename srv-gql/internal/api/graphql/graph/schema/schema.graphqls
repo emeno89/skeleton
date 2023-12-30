@@ -1,0 +1,29 @@
+directive @isLoggedIn on FIELD_DEFINITION
+
+scalar Timestamp
+scalar Int64
+
+type Query {
+    """
+    Загрузка данных текущего юзера на основе авторизации (jwt)
+    """
+    me: User @isLoggedIn
+    """
+    Пример запроса из внешнего источника (grpc)
+    """
+    exampleExternalItem(id: String!): ExampleItem!
+    """
+    Пример запроса с мок-данными (для быстрой проверки, проверять по id = 10)
+    """
+    exampleInternalItem(id: String!): ExampleItem!
+}
+
+type User {
+    id: String!
+    name: String!
+}
+
+type ExampleItem {
+    id: String!
+    title: String!
+}

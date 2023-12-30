@@ -1,0 +1,29 @@
+include:
+  local: "/deploy/.common-ci-template.yml"
+
+stages:
+  - prebuild
+  - build
+  - deploy
+
+PREBUILD:
+  extends: .base_prebuild
+  script:
+    - !reference [ .base_gen_pb, script ]
+    - !reference [ .base_lint, script ]
+
+BUILD:api:
+  extends: .base_build
+  needs:
+    - "PREBUILD"
+  variables:
+    BUILD_MODE: api
+
+DEPLOY:dev:
+  extends: .base_deploy
+  image: emeno/helm-gcloud-deployer
+  environment: dev
+  needs:
+    - "BUILD:api"
+  only:
+    - main

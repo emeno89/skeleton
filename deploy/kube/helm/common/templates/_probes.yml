@@ -1,0 +1,14 @@
+{{- define "common.deploy.probes" }}
+livenessProbe:
+  httpGet:
+    port: 8080
+    path: /status
+  initialDelaySeconds: 5
+  periodSeconds: 5
+readinessProbe:
+  httpGet:
+    port: 8080
+    path: /status
+  initialDelaySeconds: 5
+  periodSeconds: 5
+{{- end }}

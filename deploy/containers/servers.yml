@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: elasticsearch
+    environment:
+      discovery.type: "single-node"
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+      ELASTIC_PASSWORD: "${ELASTIC_PASSWORD}"
+      xpack.security.enabled: "true"
+    volumes:
+      - ./volumes/es:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: nc -z localhost 9200 || exit -1
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.9
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    restart: on-failure
+    environment:
+      ELASTICSEARCH_USERNAME: "elastic"
+      ELASTICSEARCH_PASSWORD: "${ELASTIC_PASSWORD}"
+      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:7.17.9
+    container_name: apm-server
+    ports:
+      - "8200:8200"
+    restart: on-failure
+    command: >
+      apm-server -e
+        -E output.elasticsearch.hosts=["elasticsearch:9200"]
+        -E output.elasticsearch.username=elastic
+        -E output.elasticsearch.password=${ELASTIC_PASSWORD}
+        -E apm-server.secret_token=${ELASTIC_APM_SECRET_TOKEN}
+        -E max_header_size=10485760
+    depends_on:
+      elasticsearch:
+        condition: service_healthy

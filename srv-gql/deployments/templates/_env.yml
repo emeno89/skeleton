@@ -1,0 +1,14 @@
+{{- define "env" }}
+- name: PORT
+  value: "9000"
+- name: JWT_SECRET
+  value: {{.Values.jwt.secret}}
+- name: GRPC_HOST
+  value: {{.Values.hosts.grpc}}
+- name: ELASTIC_APM_SERVER_URL
+  value: {{.Values.apm.serverUrl}}
+- name: ELASTIC_APM_ENVIRONMENT
+  value: {{.Values.apm.env}}
+- name: ELASTIC_APM_SECRET_TOKEN
+  value: {{.Values.apm.token}}
+{{- end }}

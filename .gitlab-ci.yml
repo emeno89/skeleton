@@ -1,0 +1,46 @@
+stages:
+  - lint
+  - test
+  - build
+  - deploy
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+.base_rules:
+  variables:
+    IMAGE_PATH: ${CI_REGISTRY_IMAGE}/${SRV_NAME}
+    IMAGE_TAG: ${CI_COMMIT_REF_SLUG}_${CI_COMMIT_SHORT_SHA}
+    KUBESPACE: 'app'
+    DOCKER_DRIVER: 'overlay2'
+  rules:
+    - changes:
+        - "${SRV_NAME}/**/*"
+      when: always
+    - changes:
+        - "shared/**/*"
+        - "vendor/**/*"
+        - "deploy/.common-ci-template.yml"
+      when: manual
+  trigger:
+    include:
+      - local: "/${SRV_NAME}/.gitlab-ci.yml"
+    strategy: depend
+  resource_group: main_downstream_${SRV_NAME}
+
+srv-gql:
+  extends: .base_rules
+  variables:
+    SRV_NAME: srv-gql
+
+srv-grpc:
+  extends: .base_rules
+  variables:
+    SRV_NAME: srv-grpc
+
+shared:
+  extends: .base_rules
+  variables:
+    SRV_NAME: shared

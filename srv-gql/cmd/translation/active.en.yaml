@@ -1,0 +1,3 @@
+ExampleTitle:
+  hash: sha1-652191395a762c8ffe8fee2532390c364ae966c8
+  other: User {{.Id}}

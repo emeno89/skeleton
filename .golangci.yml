@@ -1,0 +1,25 @@
+run:
+  concurrency: 2
+  timeout: 6m
+  issues-exit-code: 1
+  tests: true
+  skip-dirs:
+    - deployments
+    - .git
+  skip-dirs-use-default: true
+  modules-download-mode: vendor
+  allow-parallel-runners: true
+  go: '1.20'
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  sort-results: true
+
+linters-settings:
+  staticcheck:
+    checks:
+      - all
+      - '-SA1019' # ignore deprecated

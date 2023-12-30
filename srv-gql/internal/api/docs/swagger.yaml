@@ -1,0 +1,10 @@
+basePath: /api/v1/graphql
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+info:
+  contact: {}
+  title: Gql server API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

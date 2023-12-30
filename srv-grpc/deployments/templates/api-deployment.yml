@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{.Release.Namespace}}
+  name: {{ .Chart.Name }}-api
+  labels:
+    app: {{ .Chart.Name }}-api
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-api
+  replicas: {{ .Values.replicas.api }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-api
+        type: http-svc
+    spec:
+      imagePullSecrets:
+        - name: regcred #TODO - создай меня в кластере
+      serviceAccountName: {{ include "helm.serviceAccountName" . }}
+      {{- if .Values.nodeSelector.api.tier }}
+      nodeSelector:
+        tier: {{ .Values.nodeSelector.api.tier }}
+      {{- end }}
+      containers:
+        - name: {{.Chart.Name }}-api
+          image: "{{ .Values.imagePath }}/api:{{ .Values.imageTag }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          securityContext:
+          {{- include "common.deploy.securityContext" . | indent 12 }}
+          ports:
+            - containerPort: 9000
+          {{- include "common.deploy.probes" . | indent 10 }}
+          env:
+            {{- include "env" . | indent 12 }}
+            - name: ELASTIC_APM_SERVICE_NAME
+              value: {{ .Chart.Name }}-api
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: {{ .Chart.Name }}-api
+              type: http-svc

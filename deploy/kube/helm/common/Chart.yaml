@@ -1,0 +1,5 @@
+apiVersion: v2
+name: common
+description: Common templates
+version: 1.0.0
+application: library

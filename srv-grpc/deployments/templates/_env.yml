@@ -1,0 +1,10 @@
+{{- define "env" }}
+- name: PORT
+  value: "9000"
+- name: ELASTIC_APM_SERVER_URL
+  value: {{.Values.apm.serverUrl}}
+- name: ELASTIC_APM_ENVIRONMENT
+  value: {{.Values.apm.env}}
+- name: ELASTIC_APM_SECRET_TOKEN
+  value: {{.Values.apm.token}}
+{{- end }}

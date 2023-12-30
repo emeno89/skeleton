@@ -1,0 +1,24 @@
+nodeSelector:
+  api:
+    tier: common
+
+replicas:
+  api: 1
+
+imagePullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  annotations: { }
+  name: ""
+
+hosts:
+  grpc: srv-grpc-api:9001
+
+apm:
+  serverUrl: localhost:8200
+  env: dev
+  token: "apm_secret_token" #WARNING - keep real tokens in secrets
+
+jwt:
+  secret: "jwt_secret" #WARNING - keep real tokens in secrets

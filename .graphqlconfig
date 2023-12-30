@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "gql": {
+      "includes": [
+        "./srv-gql/internal/api/graphql/graph/schema/*.graphqls"
+      ]
+    }
+  }
+}

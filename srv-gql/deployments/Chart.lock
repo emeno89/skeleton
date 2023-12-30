@@ -1,0 +1,6 @@
+dependencies:
+- name: common
+  repository: file://../../deploy/kube/helm/common
+  version: 1.0.0
+digest: sha256:a40a557e1e10671eb89a22002567a030cbf7c7053ce29ff3f4ae6dbbae6f68ca
+generated: "2023-12-30T22:43:53.661639+01:00"

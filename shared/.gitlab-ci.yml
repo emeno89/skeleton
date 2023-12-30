@@ -1,0 +1,10 @@
+include:
+  local: "/deploy/.common-ci-template.yml"
+
+stages:
+  - prebuild
+
+PREBUILD:
+  extends: .base_prebuild
+  script:
+    - !reference [ .base_lint, script ]

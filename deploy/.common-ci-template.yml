@@ -1,0 +1,44 @@
+.base_cache:
+  variables:
+    GOCACHE: "/cachecicd/gocache"
+    GOLANGCI_LINT_CACHE: "/cachecicd/golangci-lint"
+
+.base_prebuild:
+  extends: .base_cache
+  stage: prebuild
+  image: prebuilder_amd64:1.20
+
+.base_lint:
+  script:
+    - golangci-lint run -v ./${SRV_NAME}/...
+
+.base_test:
+  script:
+    - go test ./${SRV_NAME}/... -mod=vendor -v -timeout 10s | grep -v "no test files"
+
+.base_gen_pb:
+  script:
+    - sh proto/scripts/generate.sh
+
+.base_build:
+  extends: .base_cache
+  stage: build
+  image: docker:git
+  variables:
+    TAGGED_PATH: ${IMAGE_PATH}/${BUILD_MODE}:${IMAGE_TAG}
+    LATEST_PATH: ${IMAGE_PATH}/${BUILD_MODE}:${CI_COMMIT_REF_SLUG}_latest
+  before_script:
+    - echo "${CI_DEPLOY_PASSWORD}" | docker login -u "${CI_DEPLOY_USER}" "${CI_REGISTRY}" --password-stdin
+  script:
+    - docker pull ${LATEST_PATH} || true
+    - docker build -f ${SRV_NAME}/Dockerfile --build-arg MODE=${BUILD_MODE} --cache-from ${LATEST_PATH} -t ${TAGGED_PATH} -t ${LATEST_PATH} .
+    - docker push ${TAGGED_PATH}
+    - docker push ${LATEST_PATH}
+
+.base_deploy:
+  stage: deploy
+  before_script:
+    - cd ${SRV_NAME}/deployments
+    - echo "${KUBECONFIG}" > /tmp/kubeconfig.yml && chmod 0600 /tmp/kubeconfig.yml && export KUBECONFIG=/tmp/kubeconfig.yml
+  script:
+    - helm upgrade --install -f ./values_${CI_ENVIRONMENT_NAME}.yml --namespace=${KUBESPACE} --set imagePath=${IMAGE_PATH} --set imageTag=${IMAGE_TAG} ${SRV_NAME} ./

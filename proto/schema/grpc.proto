@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package grpcpb;
+
+option go_package = "skeleton/shared/grpc/pb/grpcpb";
+
+message ExampleItem {
+  string id = 1;
+}
+
+message GetManyByIdRequest {
+  repeated string ids = 1;
+}
+
+message ManyByIdResponse {
+  repeated ExampleItem items = 1;
+}
+
+service ExampleService {
+  rpc GetManyById(GetManyByIdRequest) returns (ManyByIdResponse) {}
+}

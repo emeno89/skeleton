@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  srv-gql-api:
+    container_name: srv-gql-api
+    build:
+      context: "../.."
+      dockerfile: "srv-gql/Dockerfile"
+      args:
+        MODE: api
+    ports:
+      - "9000:9000"
+    env_file:
+      - .app_env/local.env
+    environment:
+      ELASTIC_APM_SERVICE_NAME: srv-gql-api
+  srv-grpc-api:
+    container_name: srv-grpc-api
+    build:
+      context: "../.."
+      dockerfile: "srv-grpc/Dockerfile"
+      args:
+        MODE: api
+    ports:
+      - "9001:9000"
+    env_file:
+      - .app_env/local.env
+    environment:
+      ELASTIC_APM_SERVICE_NAME: srv-grpc-api
+  elasticsearch:
+    extends:
+      file: servers.yml
+      service: elasticsearch
+  kibana:
+    extends:
+      file: servers.yml
+      service: kibana
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+  apm-server:
+    extends:
+      file: servers.yml
+      service: apm-server
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
