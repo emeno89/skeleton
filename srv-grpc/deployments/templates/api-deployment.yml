@@ -17,7 +17,7 @@ spec:
         type: http-svc
     spec:
       imagePullSecrets:
-        - name: regcred #TODO - создай меня в кластере
+        - name: regcred #TODO - create me in cluster
       serviceAccountName: {{ include "helm.serviceAccountName" . }}
       {{- if .Values.nodeSelector.api.tier }}
       nodeSelector:

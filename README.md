@@ -1,55 +1,55 @@
-#### Служебные разделы
+#### Shared folders
 
-- Контейнеры для запуска локально (docker-compose): [deploy/containers](deploy/containers);
+- local containers (docker-compose): [deploy/containers](deploy/containers);
 
-- Общие ресурсы для работы kubernetes: [deploy/kube](deploy/kube);
+- common kube resources: [deploy/kube](deploy/kube);
 
-- Все файлы схемы взаимодействия proto grpc: [proto/schema](proto/schema);
+- common protobuf schemas: [proto/schema](proto/schema);
 
-- Общий вендор для всех микросервисов: [vendor](vendor);
+- common vendor: [vendor](vendor);
 
-- Общий код для всех микросервисов не из вендора: [shared](shared);
+- common libraries: [shared](shared);
 
-- Общий шаблон .gitlab-ci: [.common-ci-template.yml](deploy/.common-ci-template.yml).
+- common template .gitlab-ci: [.common-ci-template.yml](deploy/.common-ci-template.yml).
 
-#### Сервисы
+#### Services
 
-- Логика GraphQL API: [srv-gql](srv-gql);
+- example GraphQL API service: [srv-gql](srv-gql);
 
-- Логика GRPC-сервиса: [srv-grpc](srv-grpc);
+- example GRPC service: [srv-grpc](srv-grpc);
 
-#### Логгирование
+#### Logging
 
-Используется [zap logger](https://github.com/uber-go/zap) с добавлением
-форматирования [ECS](https://go.elastic.co/ecszap)
-и трейсинга [APM](https://go.elastic.co/apm/module/apmzap/v2). Настройка происходит [здесь](shared/bootstrap/logger.go).
+Using [zap logger](https://github.com/uber-go/zap) with [ECS](https://go.elastic.co/ecszap) formatting
+and wrapper [APM](https://go.elastic.co/apm/module/apmzap/v2). 
+Logger object is created [here](shared/bootstrap/logger.go).
 
-Для управления уровнем логгирования используется env-переменная LOG_LEVEL и DEBUG (для принудительного включения debug).
+LOG_LEVEL и DEBUG env variables can be used to change log level (DEBUG=1 forcibly switches on debug level).
 
 **NOTE:**
-Для локального запуска можно использовать шаблон env-переменных, к примеру: [srv-gql/cmd/.env.dst](srv-gql/cmd/.env.dst)
+For local development you can use env template, for example: [srv-gql/cmd/.env.dst](srv-gql/cmd/.env.dst)
 
-#### Генерация из схемы GraphQL:
+#### GraphQL schema generation:
 
 ```shell script
 make gen_gql srv=<service_name>
 ````
 
-#### Генерация proto GRPC:
+#### Protobuf generation:
 
-Устанавливаем:
+Install:
 
 ```shell script
 sh proto/scripts/install.sh
 ````
 
-Генерация proto:
+Generate:
 
 ```shell script
 make gen_pb
 ````
 
-Хук на перегенерацию proto при переключении между ветками:
+Hook for proto regeneration after git branch checkout:
 
 ```shell script
 touch .git/hooks/post-checkout && \
@@ -57,33 +57,33 @@ chmod +x .git/hooks/post-checkout && \
 echo "sh ./proto/scripts/generate.sh || true" > .git/hooks/post-checkout
 ````
 
-#### Локализация:
+#### Localization:
 
-Устанавливаем:
+Install:
 
 ```shell script
 go install github.com/nicksnyder/go-i18n/v2/goi18n@latest
 ````
 
-#### Линтер:
-
-Используем [golangci-lint](https://golangci-lint.run/):
-
-```shell script
-make lint srv=<service_name>
-````
-
-1) генерация текстов из кода;
-2) применение переводов.
+1) generating texts from code;
+2) applying translations.
 
 ```shell script
 make gen_i18 srv=<service_name>
 make apply_i18 srv=<service_name>
 ````
 
-#### Запуск docker-compose:
+#### Linter:
 
-Выполняем подготовительный запуск:
+Using [golangci-lint](https://golangci-lint.run/):
+
+```shell script
+make lint srv=<service_name>
+````
+
+#### Start docker-compose:
+
+Preparations:
 
 ```shell script
 make compose_build
@@ -91,9 +91,9 @@ make compose_prepare
 ````
 
 **NOTE:**
-Если запуск происходит на MacOS, возможно требуется поменять в [.env](deploy/containers/.env) ARCH на arm64.
+If you use MacOS, ARCH can be changed to arm64 in [.env](deploy/containers/.env).
 
-Запускаем и проверяем:
+Start and get status:
 
 ```shell script
 make compose_up
