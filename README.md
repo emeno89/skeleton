@@ -6,8 +6,6 @@
 
 - common protobuf schemas: [proto/schema](proto/schema);
 
-- common vendor: [vendor](vendor);
-
 - common libraries: [shared](shared);
 
 - common template .gitlab-ci: [.common-ci-template.yml](deploy/.common-ci-template.yml).

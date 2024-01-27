@@ -4,11 +4,10 @@ deploy
 .dockerignore
 .graphqlconfig
 .golangci.yml
-go.mod
-go.sum
 Makefile
 README.md
 shared/grpc/pb
+vendor
 
 **/.gitignore
 **/.gitlab-ci.yml

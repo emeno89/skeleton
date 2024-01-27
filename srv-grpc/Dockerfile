@@ -7,11 +7,13 @@ RUN apk update && apk add --no-cache ca-certificates protobuf
 
 WORKDIR ${GOPATH}/src/skeleton
 
+COPY go.sum go.mod ./
+RUN go mod download
+
 COPY proto/scripts proto/scripts
 
 RUN sh proto/scripts/install.sh
 
-COPY vendor vendor
 COPY shared shared
 COPY proto/schema proto/schema
 
@@ -25,7 +27,7 @@ COPY ${NAME}/cmd/${MODE} ./cmd/${MODE}
 
 WORKDIR ${GOPATH}/src/skeleton/${NAME}/cmd/${MODE}
 
-RUN GO111MODULE=off GOOS=linux GOARCH=amd64 go build -o /go/bin/svc
+RUN GOOS=linux GOARCH=amd64 go build -o /go/bin/svc
 
 FROM alpine:latest
 
